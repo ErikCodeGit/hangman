@@ -6,6 +6,9 @@ require_relative 'display'
 class Game
   include Display
 
+  MIN_WORD_LENGTH = 5
+  MAX_WORD_LENGTH = 10
+
   def start_game
     init_variables
     display_welcome
@@ -95,6 +98,7 @@ class Game
   end
 
   def save_game(fname)
+    ensure_saves_dir_exist
     file = File.new("saves/#{fname}.yml", 'w')
     @info = { word: @word,
               hint: @hint,
@@ -102,8 +106,15 @@ class Game
               correct_letters: @correct_letters,
               false_letters: @false_letters }
     file.write(@info.to_yaml)
+    file.close
     @current_save = fname
     display_save_success
+  end
+
+  def ensure_saves_dir_exist
+    return if Dir.exist?('saves')
+
+    Dir.mkdir('saves')
   end
 
   def load_save(fname)
@@ -131,7 +142,9 @@ class Game
 
   def choose_random_word
     File.open('google-10000-english-no-swears.txt', 'r') do |file|
-      words = file.readlines.map(&:strip).filter { |word| word.length.between?(5, 10) }
+      words = file.readlines
+                  .map(&:strip)
+                  .filter { |word| word.length.between?(MIN_WORD_LENGTH, MAX_WORD_LENGTH) }
       words.length
       return words[rand(words.length)]
     end

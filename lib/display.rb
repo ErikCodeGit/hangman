@@ -7,7 +7,7 @@ module Display
 
   def display_welcome
     display_hr
-    puts "Welcome to Hangman!"
+    puts 'Welcome to Hangman!'
     display_hr
   end
 
@@ -22,7 +22,13 @@ module Display
   end
 
   def ask_which_save
-    if Dir.exist?('saves')
+    return_value = false
+    if !Dir.exist?('saves')
+      puts 'You did not save any games yet!'
+      Dir.mkdir('saves')
+    elsif Dir.glob('saves/*'.empty?)
+      puts 'You do not have any saved games!'
+    elsif Dir.exist?('saves')
       file_names = Dir.glob('saves/*').map { |file| file[(file.index('/') + 1)...(file.index('.'))] }
       puts 'Your saved games:'
       puts(file_names.map { |fname| "- #{fname}" })
@@ -34,14 +40,10 @@ module Display
 
         puts 'Please enter a valid filename!'
       end
-      fname
-    else
-      puts 'You did not save any games yet!'
-      Dir.mkdir('saves')
-      display_hr
-      return false
+      return_value = fname
     end
     display_hr
+    return_value
   end
 
   def display_hint(hint)
@@ -56,12 +58,11 @@ module Display
   end
 
   def ask_letter
-    print 'Enter your guess: '
+    print "Enter your guess ('!save' to save): "
     response = ''
     loop do
       response = gets.chomp
-      return response if response == '!save'
-      break if response.length == 1 && response.match?(/[a-zA-Z]/)
+      break if (response.length == 1 && response.match?(/[a-zA-Z]/)) || response == '!save'
 
       puts 'Invalid guess, only enter single letters:'
     end
@@ -80,14 +81,17 @@ module Display
 
   def display_load_success
     puts 'Loaded file successfully!'
+    display_hr
   end
 
   def display_load_error
     puts "Couldn't load from file!"
+    display_hr
   end
 
   def display_save_success
     puts 'Saved file successfully!'
+    display_hr
   end
 
   def display_win
