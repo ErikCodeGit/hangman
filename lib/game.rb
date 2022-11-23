@@ -7,7 +7,7 @@ class Game
   include Display
 
   MIN_WORD_LENGTH = 5
-  MAX_WORD_LENGTH = 10
+  MAX_WORD_LENGTH = 12
 
   def start_game
     init_variables
