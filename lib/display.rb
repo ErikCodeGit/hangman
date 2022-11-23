@@ -70,8 +70,8 @@ module Display
     response.downcase
   end
 
-  def display_guesses(guesses)
-    puts "You have #{guesses} guesses left!"
+  def display_lives(lives)
+    puts "You have #{lives} lives left!"
   end
 
   def display_game_start
@@ -100,7 +100,7 @@ module Display
   end
 
   def display_defeat(word)
-    puts "You ran out of guesses! The word was '#{word}'"
+    puts "You ran out of lives! The word was '#{word}'"
     display_hr
   end
 

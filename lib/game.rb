@@ -27,7 +27,7 @@ class Game
   def init_variables
     @word = ''
     @hint = ''
-    @guesses = 0
+    @lives = 0
     @correct_letters = []
     @false_letters = []
     @won = false
@@ -36,14 +36,14 @@ class Game
 
   def new_game
     display_game_start
-    p @word = choose_random_word
+    @word = choose_random_word
     @hint = @word.gsub(/./, '_')
-    @guesses = 12
+    @lives = 8
   end
 
   def start_player_guessing
-    until @guesses.zero? || @won
-      display_guesses(@guesses)
+    until @lives.zero? || @won
+      display_lives(@lives)
       display_hint(@hint)
       handle_guess
     end
@@ -63,7 +63,6 @@ class Game
     else
       eval_guess(guess)
       update_hint
-      @guesses -= 1
       check_game_won
     end
   end
@@ -73,6 +72,7 @@ class Game
       @correct_letters << guess
     else
       @false_letters << guess
+      @lives -= 1
     end
   end
 
@@ -102,7 +102,7 @@ class Game
     file = File.new("saves/#{fname}.yml", 'w')
     @info = { word: @word,
               hint: @hint,
-              guesses: @guesses,
+              lives: @lives,
               correct_letters: @correct_letters,
               false_letters: @false_letters }
     file.write(@info.to_yaml)
@@ -135,7 +135,7 @@ class Game
   def update_info(hash)
     @word = hash[:word]
     @hint = hash[:hint]
-    @guesses = hash[:guesses]
+    @lives = hash[:lives]
     @correct_letters = hash[:correct_letters]
     @false_letters = hash[:false_letters]
   end
