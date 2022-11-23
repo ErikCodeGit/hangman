@@ -6,15 +6,9 @@ require_relative 'display'
 class Game
   include Display
 
-  def initialize
-    @word = ''
-    @hint = ''
-    @guesses = 0
-    @correct_letters = []
-    @false_letters = []
-  end
-
   def start_game
+    init_variables
+    display_welcome
     response = ask_new_or_load
     case response
     when 'load'
@@ -23,10 +17,19 @@ class Game
       new_game
     end
     start_player_guessing
-    # save_game(ask_save_name)
   end
 
   private
+
+  def init_variables
+    @word = ''
+    @hint = ''
+    @guesses = 0
+    @correct_letters = []
+    @false_letters = []
+    @won = false
+    @current_save = ''
+  end
 
   def new_game
     display_game_start
@@ -36,11 +39,18 @@ class Game
   end
 
   def start_player_guessing
-    until @guesses.zero?
+    until @guesses.zero? || @won
       display_guesses(@guesses)
       display_hint(@hint)
       handle_guess
     end
+    display_hint(@hint)
+    if @won
+      display_win
+    else
+      display_defeat(@word)
+    end
+    start_game if ask_play_again
   end
 
   def handle_guess
@@ -51,6 +61,7 @@ class Game
       eval_guess(guess)
       update_hint
       @guesses -= 1
+      check_game_won
     end
   end
 
@@ -72,6 +83,17 @@ class Game
     end.join
   end
 
+  def check_game_won
+    return unless @hint == @word
+
+    @won = true
+    delete_save(@current_save) if @current_save != ''
+  end
+
+  def delete_save(fname)
+    File.delete("saves/#{fname}.yml")
+  end
+
   def save_game(fname)
     file = File.new("saves/#{fname}.yml", 'w')
     @info = { word: @word,
@@ -80,6 +102,7 @@ class Game
               correct_letters: @correct_letters,
               false_letters: @false_letters }
     file.write(@info.to_yaml)
+    @current_save = fname
     display_save_success
   end
 
@@ -88,6 +111,7 @@ class Game
       content = YAML.load(File.read("saves/#{fname}.yml")) # rubocop:disable Security/YAMLLoad
       begin
         update_info(content)
+        @current_save = fname
         display_load_success
       rescue StandardError
         display_load_error

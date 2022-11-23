@@ -5,6 +5,12 @@ module Display
     puts Array.new(50, '-').join
   end
 
+  def display_welcome
+    display_hr
+    puts "Welcome to Hangman!"
+    display_hr
+  end
+
   def ask_new_or_load
     puts '- Enter 1 to start a new game'
     puts '- Enter 2 to load a saved game'
@@ -16,7 +22,6 @@ module Display
   end
 
   def ask_which_save
-    display_hr
     if Dir.exist?('saves')
       file_names = Dir.glob('saves/*').map { |file| file[(file.index('/') + 1)...(file.index('.'))] }
       puts 'Your saved games:'
@@ -83,5 +88,25 @@ module Display
 
   def display_save_success
     puts 'Saved file successfully!'
+  end
+
+  def display_win
+    puts 'You guessed the word correctly!'
+    display_hr
+  end
+
+  def display_defeat(word)
+    puts "You ran out of guesses! The word was '#{word}'"
+    display_hr
+  end
+
+  def ask_play_again
+    puts 'Do you wish to play again?'
+    puts "- Enter 'y' to play again, anything else to quit"
+    response = gets.chomp
+    display_hr
+    return true if response.downcase[0] == 'y'
+
+    false
   end
 end
