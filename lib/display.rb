@@ -113,4 +113,16 @@ module Display
 
     false
   end
+
+  def display_right_guess(guess)
+    print "'#{guess}' is Correct! "
+  end
+
+  def display_wrong_guess(guess)
+    print "'#{guess}' is Wrong! "
+  end
+
+  def display_already_guessed(guess)
+    print "You already tried '#{guess}'! "
+  end
 end

@@ -68,11 +68,15 @@ class Game
   end
 
   def eval_guess(guess)
-    if @word.include?(guess)
+    if @correct_letters.include?(guess)
+      display_already_guessed(guess)
+    elsif @word.include?(guess)
       @correct_letters << guess
+      display_right_guess(guess)
     else
       @false_letters << guess
       @lives -= 1
+      display_wrong_guess(guess)
     end
   end
 
